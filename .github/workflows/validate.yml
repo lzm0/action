@@ -1,0 +1,64 @@
+name: Dhall Validator
+on:
+  push:
+    branches:
+      - "**"
+    tags-ignore:
+      - "**"
+  pull_request_target:
+  issue_comment:
+    types: [created]
+
+jobs:
+  validate-files:
+    name: Validate Files
+    runs-on: ubuntu-20.04
+    continue-on-error: true
+    steps:
+    - name: checkout-merge
+      if: "contains(github.event_name, 'pull_request')"
+      uses: actions/checkout@v2
+      with:
+        ref: refs/pull/${{github.event.pull_request.number}}/merge
+    - name: checkout
+      if: "!contains(github.event_name, 'pull_request')"
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+    - name: dhall-validator-files
+      uses: ./
+      with:
+        dhall-files: |
+          tests/missing-env.dhall
+          tests/fail.dhall
+          tests/url.dhall
+        verbose: 1
+  validate-list:
+    name: Validate List
+    runs-on: ubuntu-20.04
+    continue-on-error: true
+    steps:
+    - name: checkout-merge
+      if: "contains(github.event_name, 'pull_request')"
+      uses: actions/checkout@v2
+      with:
+        ref: refs/pull/${{github.event.pull_request.number}}/merge
+    - name: checkout
+      if: "!contains(github.event_name, 'pull_request')"
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+    - name: get tests
+      uses: actions/checkout@v2
+      with:
+        repository: dhall-lang/dhall-lang
+        path: dhall-lang
+    - name: build-list
+      shell: bash
+      run: |
+        git -C dhall-lang ls-files 'tests/parser/*/unit/Bool*.dhall' -z |
+        perl -e '$/="\0"; while (<>) {s#^#dhall-lang/#; print}' > /tmp/dhall-files.list
+    - name: dhall-validator-list
+      uses: ./
+      with:
+        dhall-file-list: /tmp/dhall-files.list

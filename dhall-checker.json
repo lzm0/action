@@ -1,0 +1,17 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "dhall-checker",
+      "pattern": [
+        {
+          "regexp": "^(Error): (.*?) :: ([^:]+):(\\d+):(\\d+)$",
+          "severity": 1,
+          "message": 2,
+          "file": 3,
+          "line": 4,
+          "column": 5
+        }
+      ]
+    }
+  ]
+}

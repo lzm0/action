@@ -1,0 +1,49 @@
+#!/bin/sh
+set -e
+dhall_file_path="$1"
+echo "Checking $dhall_file_path"
+directory=$(dirname $dhall_file_path)
+file=$(basename $dhall_file_path)
+cd $directory
+dhall_output=$(mktemp)
+if ! echo ./$file |
+  dhall-to-yaml --omit-empty > /dev/null 2> $dhall_output; then
+  echo $dhall_file_path failed
+  echo "Retry using: (cd $directory; echo ./$file | dhall-to-yaml --omit-empty)"
+  error_log=$(mktemp)
+  perl -pne '
+    use File::Spec q<abs2rel>;
+    use Cwd q<abs_path>;
+    if ($error) {
+      if (m{^([^:]*):(\d+):(\d+):?$}) {
+        my ($file, $line, $col) = ($1, $2, $3);
+        open FILE, "<", "$file";
+        my $last;
+        my $lineNo = 0;
+        for my $text (<FILE>) {
+          $last = $text;
+          ++$lineNo;
+        }
+        close FILE;
+        if ($line > $lineNo) {
+          $line = $lineNo;
+          $col = length $last;
+        }
+        print STDERR "$error :: ".File::Spec->abs2rel($file,$ENV{GITHUB_WORKSPACE}).":$line:$col\n";
+        $error = undef;
+      }
+    } elsif (s{\x1b\[\d+(?:;\d+|)m}{}g) {
+      $error = $_;
+      chomp $error;
+    }
+    s{(\S*\./[^\s:]+)}{abs_path($1)}eg;
+    s{^\(input\)}{./'"$file"'};
+    s{(^|\s)(/\S*)(:\d+:\d+|$)}{$1.File::Spec->abs2rel($2,$ENV{GITHUB_WORKSPACE}).$3}eg;
+  ' $dhall_output 2> $error_log
+  cat $error_log
+  if [ -n "$DHALL_FAILURES" ]; then
+    canary=$(mktemp)
+    echo $dhall_file_path > $canary
+    mv $canary $DHALL_FAILURES
+  fi
+fi
