@@ -8,7 +8,7 @@ dhall_haskell="$(eval echo "$DHALL_BINARY")"
 curl -Ls $dhall_haskell | tar -xjf -
 PATH="$(pwd)/bin:$PATH"
 
-echo "::add-matcher::dhall-checker.json"
+echo "::add-matcher::$GITHUB_ACTION_PATH/dhall-checker.json"
 
 export DHALL_FAILURES=$(mktemp -d)
 if [ -z "$LIST" ]; then
