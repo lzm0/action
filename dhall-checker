@@ -6,10 +6,9 @@ directory=$(dirname $dhall_file_path)
 file=$(basename $dhall_file_path)
 cd $directory
 dhall_output=$(mktemp)
-if ! echo ./$file |
-  dhall-to-yaml --omit-empty > /dev/null 2> $dhall_output; then
+if ! dhall-to-yaml --file ./$file --omit-empty > /dev/null 2> $dhall_output; then
   echo $dhall_file_path failed
-  echo "Retry using: (cd $directory; echo ./$file | dhall-to-yaml --omit-empty)"
+  echo "Retry using: (cd $directory; dhall-to-yaml --file ./$file --omit-empty)"
   error_log=$(mktemp)
   perl -pne '
     use File::Spec q<abs2rel>;
