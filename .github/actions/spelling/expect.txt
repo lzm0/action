@@ -6,5 +6,6 @@ mktemp
 perl
 pne
 pwd
+sudo
 undef
 yaml

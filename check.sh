@@ -1,8 +1,8 @@
 #!/bin/sh
 
 command -v "parallel" >/dev/null 2>/dev/null || (
-  apt update
-  apt install -y parallel
+  sudo apt-get update
+  sudo apt-get install -y parallel
 )
 dhall_haskell="$(eval echo "$DHALL_BINARY")"
 curl -Ls $dhall_haskell | tar -xjf -
