@@ -32,6 +32,7 @@ jobs:
           tests/missing-env.dhall
           tests/fail.dhall
           tests/url.dhall
+          tests/pass.dhall
         verbose: 1
   validate-list:
     name: Validate List
