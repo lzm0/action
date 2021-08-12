@@ -28,6 +28,8 @@ cat $LIST |
   fi
   echo
   echo "Errors detected in:"
-  for file in $files; do cat $file; done
+  for file in $files; do
+    cat $file
+  done
   exit 1
 )
