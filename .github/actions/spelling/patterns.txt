@@ -3,5 +3,8 @@
 # ignore long runs of a single character:
 \b([A-Za-z])\g{-1}{3,}\b
 
+# curl arguments
+\b(?:\\n|)curl(?:\s+-[a-zA-Z]+)+
+
 # tar arguments
 \b(?:\\n|)tar(?:\s+-[a-zA-Z]+|\s[a-z]+)+

@@ -1,7 +1,9 @@
-#!/bin/sh
+#!/bin/sh -e
 
 dhall_haskell="$(eval echo "$DHALL_BINARY")"
-curl -Ls $dhall_haskell | tar -xjf -
+archive=$(mktemp)
+curl -Lsf "$dhall_haskell" -o "$archive"
+tar -xjf "$archive"
 PATH="$(pwd)/bin:$PATH"
 
 echo "::add-matcher::$GITHUB_ACTION_PATH/dhall-checker.json"
