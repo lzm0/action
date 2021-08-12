@@ -6,14 +6,14 @@ on:
     tags-ignore:
       - "**"
   pull_request_target:
-  issue_comment:
-    types: [created]
 
 jobs:
   validate-files:
     name: Validate Files
     runs-on: ubuntu-20.04
     continue-on-error: true
+    permissions:
+      contents: read
     steps:
     - name: checkout-merge
       if: "contains(github.event_name, 'pull_request')"
