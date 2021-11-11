@@ -23,6 +23,10 @@ inputs:
   dhall-file-list:
     description: 'Null delimited file of dhall files to check'
     required: false
+  parallel-jobs:
+    description: 'Number of CPUs available for running checks'
+    required: false
+    default: '2'
   verbose:
     description: 'Enable verbose logging'
     default: ''
@@ -38,6 +42,7 @@ runs:
         DHALL_BINARY: ${{ inputs.dhall-binary }}
         FILES: ${{ inputs.dhall-files }}
         LIST: ${{ inputs.dhall-file-list }}
+        PARALLEL_JOBS: ${{ inputs.parallel-jobs }}
         VERBOSE: ${{ inputs.verbose }}
       run:
         $GITHUB_ACTION_PATH/check.sh

@@ -15,8 +15,11 @@ fi
 if [ -n "$FILES" ]; then
   echo "$FILES" | tr "\n" "\0" >> $LIST
 fi
+if [ -z "$PARALLEL_JOBS" ]; then
+  PARALLEL_JOBS=2
+fi
 cat $LIST |
-  xargs -0 -P2 -r -n1 $GITHUB_ACTION_PATH/dhall-checker
+  xargs -0 "-P$PARALLEL_JOBS" -r -n1 $GITHUB_ACTION_PATH/dhall-checker
 (
   cd $DHALL_FAILURES
   files="$(find . -type f)"
