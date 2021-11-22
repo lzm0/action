@@ -18,6 +18,10 @@ fi
 if [ -z "$PARALLEL_JOBS" ]; then
   PARALLEL_JOBS=2
 fi
+if [ -n "$VERBOSE" ]; then
+  echo "Checking:"
+  tr "\0" "\n" < $LIST
+fi
 cat $LIST |
   xargs -0 "-P$PARALLEL_JOBS" -r -n1 $GITHUB_ACTION_PATH/dhall-checker
 (
